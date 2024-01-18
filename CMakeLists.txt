@@ -36,8 +36,10 @@ target_sources(${PROJECT_NAME}
 target_include_directories(strdo
     PRIVATE src
     PUBLIC include)
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE iconv)
+if (APPLE)
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE iconv)
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES
     PUBLIC_HEADER include/strdo.hpp)
 install(TARGETS ${PROJECT_NAME}
@@ -46,5 +48,4 @@ install(TARGETS ${PROJECT_NAME}
 
 
 # Tests
-find_package(Catch2 REQUIRED)
 add_subdirectory(tests)
