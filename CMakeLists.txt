@@ -43,3 +43,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION lib
     PUBLIC_HEADER DESTINATION include)
+
+
+# Tests
+find_package(Catch2 REQUIRED)
+add_subdirectory(tests)
