@@ -74,7 +74,16 @@ inline std::string conv_to_utf8(const std::string &orig,
 }
 
 
+/*
+ * Inspect every bytes(in hex) in the string.
+ */
 void inspect_string_bytes(std::string_view sv, size_t nbytes = 0);
+
+
+/*
+ * strlen for UTF-8 string. Counting characters instead of bytes.
+ */
+size_t u8strlen(std::string_view sv);
 
 } // namespace strdo
 

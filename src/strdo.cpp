@@ -72,4 +72,22 @@ void inspect_string_bytes(std::string_view sv, size_t nbytes) {
   printf("\n");
 }
 
+size_t u8strlen(std::string_view sv) {
+  size_t istr = 0;
+  size_t count = 0;
+  while (istr < sv.size()) {
+    if ((sv[istr] & 0b11110000) == 0b11110000) {
+      istr += 4;
+    } else if ((sv[istr] & 0b11100000) == 0b11100000) {
+      istr += 3;
+    } else if ((sv[istr] & 0b11000000) == 0b11000000) {
+      istr += 2;
+    } else {
+      istr += 1;
+    }
+    count += 1;
+  }
+  return count;
+}
+
 } // namespace strdo
