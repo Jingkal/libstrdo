@@ -73,6 +73,9 @@ inline std::string conv_to_utf8(const std::string &orig,
   return conv_encoding(orig, from_enc, "UTF-8");
 }
 
+
+void inspect_string_bytes(std::string_view sv, size_t nbytes = 0);
+
 } // namespace strdo
 
 #endif
