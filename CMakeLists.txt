@@ -1,51 +1,40 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.25)
 
-# PROJECT
-project(
-    strdo
-    LANGUAGES CXX
-)
+##############################################
+####### PROJECT wide settings
+##############################################
+project(strdo LANGUAGES CXX)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# OUTPUT
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/lib)
 
-# INSTALL
-if(NOT CMAKE_INSTALL_PREFIX)
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
-    else()
-        set(CMAKE_INSTALL_PREFIX $ENV{HOME}/.local)
-    endif()
-endif()
+###########################
+####### Find Packages
+###########################
+find_package(Iconv REQUIRED)
+find_package(Catch2 REQUIRED)
 
-include(cmake/iconv-config.cmake)
-
-# library strdo 
+##########################################################################
+####### TARGET: library strdo
+##########################################################################
 add_library(${PROJECT_NAME} STATIC)
+
 target_sources(${PROJECT_NAME}
     PRIVATE ${CMAKE_SOURCE_DIR}/src/strdo.cpp
-    PUBLIC ${CMAKE_SOURCE_DIR}/include/strdo.hpp)
+    PUBLIC FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}/include
+        FILES ${CMAKE_SOURCE_DIR}/include/strdo.hpp)
+
 target_include_directories(strdo
     PRIVATE src
     PUBLIC include)
-if (APPLE)
-    target_link_libraries(${PROJECT_NAME}
-        PRIVATE iconv)
-endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    PUBLIC_HEADER include/strdo.hpp)
-install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
 
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE Iconv::Iconv)
 
-# Tests
-add_subdirectory(tests)
+install(TARGETS ${PROJECT_NAME} FILE_SET HEADERS)
