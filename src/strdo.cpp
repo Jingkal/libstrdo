@@ -3,21 +3,32 @@
 #include <cstdio>
 #include <memory>
 
-
 namespace strdo {
 
-std::vector<std::string> split(std::string_view srcview, std::string delim) {
+/*
+ * Split the string on delimiter.
+ * It'll strip the resulted substring of starting and ending spaces but
+ * ignores spaces in the middle of the string.
+ */
+std::vector<std::string> split(const std::string src,
+                               const std::string &delim) {
   std::vector<std::string> ret;
-  auto pos = size_t(0);
-  while (srcview.size() > 0) {
-    pos = srcview.find(delim);
-    auto rv = strip(srcview.substr(0, pos));
-    if (!rv.empty())
-      ret.push_back(std::string(rv));
-    if (pos == std::string::npos)
-      break;
-    srcview.remove_prefix(pos + delim.size());
+  if (src.size() == 0)
+    return ret;
+
+  auto bufSz = src.size() + 1;
+  auto srcbuf = std::make_unique<char[]>(bufSz);
+  auto srcptr = srcbuf.get();
+  char *svptr = nullptr;
+
+  std::strncpy(srcptr, src.c_str(), bufSz);
+
+  auto tokptr = strtok_r(srcptr, delim.c_str(), &svptr);
+  while (tokptr != nullptr) {
+    ret.emplace_back(tokptr);
+    tokptr = strtok_r(nullptr, delim.c_str(), &svptr);
   }
+
   return ret;
 }
 

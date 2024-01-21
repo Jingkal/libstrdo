@@ -17,7 +17,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out/lib)
 ####### Find Packages
 ###########################
 find_package(Iconv REQUIRED)
-find_package(Catch2 REQUIRED)
+
+find_package(Catch2 REQUIRED
+    HINTS $ENV{HOME}/.local
+    NO_DEFAULT_PATH)
 
 ##########################################################################
 ####### TARGET: library strdo
@@ -38,3 +41,8 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE Iconv::Iconv)
 
 install(TARGETS ${PROJECT_NAME} FILE_SET HEADERS)
+
+##########################################################################
+####### TARGET: library strdo
+##########################################################################
+add_subdirectory(tests)

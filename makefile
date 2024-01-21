@@ -2,7 +2,7 @@ debug:
 	cmake --build build
 
 init: clean
-	cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Debug
+	cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=ReleaseWithDebInfo
 	ln -s ./build/compile_commands.json ./compile_commands.json
 
 install.debug:
@@ -10,7 +10,7 @@ install.debug:
 
 .PHONY: clean all run
 
-all: debug release
+all: debug
 
 clean:
 	rm -rf build out .cache install compile_commands.json

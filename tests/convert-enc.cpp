@@ -1,12 +1,7 @@
 #include "strdo.hpp"
+#include <catch2/catch_test_macros.hpp>
 #include <map>
 #include <string>
-
-#if __linux__
-#include <catch2/catch.hpp>
-#elif __APPLE__
-#include <catch2/catch_test_macros.hpp>
-#endif
 
 TEST_CASE("Test Convert From GBK to UTF8", "[conv]") {
   auto strings = std::map<std::string, std::string>();

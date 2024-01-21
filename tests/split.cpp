@@ -1,38 +1,40 @@
 #include "strdo.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <cstddef>
 #include <cstdio>
+#include <map>
+#include <string>
+#include <vector>
 
-inline void printv(std::vector<std::string>& vec) {
-    for (const auto& str: vec) {
-        printf("%s\n", str.c_str());
-    }
+bool is_vec_same(const std::vector<std::string> &v1,
+                 const std::vector<std::string> &v2) {
+  if (v1.size() != v2.size())
+    return false;
+  for (size_t i = 0; i < v1.size(); i++) {
+    if (v1[i] != v2[i])
+      return false;
+  }
+  return true;
 }
 
-void test(std::vector<std::string> &vec, std::string delim) {
-    for (auto& str: vec) {
-        auto res = strdo::split(str, delim);
-        printv(res);
-    }
+TEST_CASE("Test split spaces", "[spaces]") {
+  std::map<std::string, std::vector<std::string>> space_test_grp = {
+      {"hello world", {"hello", "world"}},
+      {"i'm shit\tjaksljdflj aalksdjf",
+       {"i'm", "shit", "jaksljdflj", "aalksdjf"}},
+      {" kadsklfj a d' df' \t sdf", {"kadsklfj", "a", "d'", "df'", "sdf"}},
+  };
+  for (const auto &[src, control] : space_test_grp) {
+    auto res = strdo::split(src);
+    CHECK(is_vec_same(res, control));
+  }
 }
 
-void test_space_char() {
-    auto srcs = std::vector<std::string>{
-        "hello world",
-        "i'm shit\tjaksljdflj aalksdjf"
-        " kadsklfj a d' df' \t sdf" };
-    test(srcs, " ");
-}
-
-void test_word() {
-    auto srcs = std::vector<std::string>{
-        "i test you",
-        "we test him test her"
-    };
-    test(srcs, "test");
-
-}
-
-int main(void) {
-    // test_space_char();
-    test_word();
-    return 0;
+TEST_CASE("Test split space and symbols", "[mixed]") {
+  auto control =
+      std::vector<std::string>{"a", "b", "c", "d", "ef", "gh", "xyz"};
+  auto sample = std::string("a, b, c, d, ef, gh, -xyz");
+  auto delim = std::string("- ,");
+  auto res = strdo::split(sample, delim);
+  CHECK(is_vec_same(control, res));
 }

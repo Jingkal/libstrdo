@@ -2,61 +2,42 @@
 #define LIB_STRDO_HH
 
 #include <algorithm>
+#include <cstring>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cstring>
 
 namespace strdo {
 
 /*
- * Remove space characters from beginning of a string. VIEW ONLY.
+ * Trim spaces on the left of a string.
  */
-inline std::string_view strip_left(std::string_view sv) {
-  auto pos = std::find_if(sv.begin(), sv.end(),
-                          [](char c) { return !std::isspace(c); });
-  sv.remove_prefix(pos - sv.begin());
-  return sv;
+inline std::string trim_left(const std::string &src) {
+  auto b_it = std::find_if(src.cbegin(), src.cend(),
+                           [](const char &c) { return !isspace(c); });
+  return src.substr(b_it - src.cbegin(), src.cend() - b_it);
 }
 
 /*
- * Remove space characters from end of a string. VIEW ONLY.
+ * Trim spaces on the right of a string.
  */
-inline std::string_view strip_right(std::string_view sv) {
-  auto pos = std::find_if(sv.rbegin(), sv.rend(),
-                          [](char c) { return !std::isspace(c); });
-  sv.remove_suffix(sv.end() - pos.base());
-  return sv;
+inline std::string trim_right(const std::string &src) {
+  auto b_it = std::find_if(src.crbegin(), src.crend(),
+                           [](const char &c) { return !isspace(c); });
+  return src.substr(0, b_it.base() - src.cbegin());
 }
 
 /*
- * A new string without the beginning space characters
+ * Trim spaces on the both ends of a string.
  */
-inline std::string strip_left_new(std::string_view sv) {
-  sv = strip_left(sv);
-  return std::string(sv);
-}
-
-/*
- * A new string without the trailing space characters
- */
-inline std::string strip_right_new(std::string_view sv) {
-  sv = strip_right(sv);
-  return std::string(sv);
-}
-
-/*
- * A new string without space characters at the head or tail.
- */
-inline std::string strip(std::string_view sv) {
-  sv = strip_right(strip_left(sv));
-  return std::string(sv);
+inline std::string trim(const std::string &src) {
+  return trim_right(trim_left(src));
 }
 
 /*
  * split string by delim into a vector of string.
  */
-std::vector<std::string> split(std::string_view srcview, std::string delim);
+std::vector<std::string> split(const std::string src, const std::string &delim = " \t");
 
 /*
  * convert string encoding from *from_enc* to *to_enc*
@@ -74,12 +55,10 @@ inline std::string conv_to_utf8(const std::string &orig,
   return conv_encoding(orig, from_enc, "UTF-8");
 }
 
-
 /*
  * Inspect every bytes(in hex) in the string.
  */
 void inspect_string_bytes(std::string_view sv, size_t nbytes = 0);
-
 
 /*
  * strlen for UTF-8 string. Counting characters instead of bytes.

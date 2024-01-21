@@ -1,14 +1,16 @@
-find_package(Catch2 CONFIG REQUIRED
-    HINTS /usr/lib/cmake/Catch2
-)
+if(NOT Catch2_FOUND)
+    message(WARNING ">>>> Catch2 NOT loaded. Test Aborted!")
+    return()
+endif()
 
-file(GLOB testsrcfiles ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
-message("PROJECT name: ${PROJECT_NAME}")
+message(STATUS ">>>> Making tests:")
 
-foreach(tfile IN LISTS testsrcfiles)
-    get_filename_component(tarname ${tfile} NAME_WE)
-    message(" >>> ${tfile} -> ${tarname}")
-    set(tarname "test-${tarname}")
-    add_executable(${tarname} ${tfile})
-    target_link_libraries(${tarname} PUBLIC strdo Catch2::Catch2WithMain)
+# get all test source files
+file(GLOB srcfiles ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
+foreach(filename IN LISTS srcfiles)
+    get_filename_component(testname ${filename} NAME_WE)
+    set(testname test-${testname})
+    message(STATUS ">>>>>>> +test: [${testname}] from\n\t\t\t${filename}")
+    add_executable(${testname} ${filename})
+    target_link_libraries(${testname} ${PROJECT_NAME} Catch2::Catch2WithMain)
 endforeach()
